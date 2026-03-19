@@ -39,6 +39,11 @@ services:
     restart: always
     ports:
       - "8088:8080"
+    # To use Adminer with PostgreSQL:
+    # 1. Open http://localhost:8088
+    # 2. Select 'PostgreSQL' in the 'System' dropdown
+    # 3. Use 'db' as the 'Server' (not localhost:5433 or db:5433)
+    # 4. Use credentials from .env (grow_user / grow_password)
     depends_on:
       - db
 
