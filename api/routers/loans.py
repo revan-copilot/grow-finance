@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import uuid
+from datetime import datetime
 from decimal import Decimal
 import pandas as pd
 import io
@@ -71,8 +72,8 @@ def get_loan_application(
     """
     Get detailed loan application info (the 3 tabs).
     """
-    # Finding by custom ID or internal ID for demo; ideal is a UUID on LoanApplication too
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).first()
+    # Finding by technical UUID
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
     
@@ -98,7 +99,7 @@ def update_loan_application(
     """
     Edit loan application details across the 3 tabs. Restricted to Admin.
     """
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).first()
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
 
@@ -129,7 +130,7 @@ def approve_loan(
     Approve a loan application and move it to the Active Loans table.
     """
     # Use SELECT FOR UPDATE to prevent race conditions
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).with_for_update().first()
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).with_for_update().first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
 
@@ -154,6 +155,7 @@ def approve_loan(
     
     app.status = "Active"
     db.add(new_loan)
+    db.flush() # Flush to get new_loan.id
     
     from core.emi import generate_repayment_schedule
     generate_repayment_schedule(db, new_loan)
@@ -195,7 +197,7 @@ def reject_loan(
     """
     Reject a loan application.
     """
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).first()
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
 
@@ -237,7 +239,7 @@ async def export_loan_details(
     """
     Export loan details as Excel or PDF.
     """
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).first()
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
     
@@ -292,7 +294,7 @@ async def upload_loan_documents(
     """
     Upload additional supporting documents for a loan application.
     """
-    app = db.query(LoanApplication).filter(LoanApplication.loan_custom_id == loan_uuid).first()
+    app = db.query(LoanApplication).filter(LoanApplication.uuid == loan_uuid).first()
     if not app:
         raise HTTPException(status_code=404, detail="Loan application not found")
     

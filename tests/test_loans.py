@@ -102,7 +102,7 @@ def test_admin_approve_loan(client, db, test_setup):
     db.commit()
 
     response = client.post(
-        "/api/v1/loans/applications/LA-0001/approve",
+        f"/api/v1/loans/applications/{app.uuid}/approve",
         headers={"Authorization": f"Bearer {test_setup['admin_token']}"}
     )
     assert response.status_code == 200
@@ -119,7 +119,7 @@ def test_staff_cannot_approve_loan(client, db, test_setup):
     db.commit()
 
     response = client.post(
-        "/api/v1/loans/applications/LA-0002/approve",
+        f"/api/v1/loans/applications/{app.uuid}/approve",
         headers={"Authorization": f"Bearer {test_setup['staff_token']}"}
     )
     # Depending on how get_admin is implemented, it might return 401 or 403 or 404 client-side

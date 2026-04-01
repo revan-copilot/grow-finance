@@ -35,15 +35,16 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="allow")
 
     # Storage Settings
-    STORAGE_BACKEND: str = "local" # "local" or "s3"
+    STORAGE_BACKEND: str = "local"  # "local" or "s3"
     LOCAL_STORAGE_PATH: str = "uploads"
     API_BASE_URL: str = "http://localhost:8008"
-    
-    # S3 Settings
-    S3_BUCKET: str = os.getenv("S3_BUCKET", "")
-    AWS_ACCESS_KEY_ID: str = os.getenv("AWS_ACCESS_KEY_ID", "")
-    AWS_SECRET_ACCESS_KEY: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
-    AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")
-    S3_ENDPOINT_URL: str = os.getenv("S3_ENDPOINT_URL", "") # For Minio or local testing
+
+    # S3 / MinIO Settings
+    S3_BUCKET: str = "finance-uploads"
+    AWS_ACCESS_KEY_ID: str = ""
+    AWS_SECRET_ACCESS_KEY: str = ""
+    AWS_REGION: str = "us-east-1"
+    S3_ENDPOINT_URL: str = ""       # Internal Docker URL: http://minio:9000
+    MINIO_PUBLIC_URL: str = ""      # External browser URL: http://localhost:9000
     
 settings = Settings()

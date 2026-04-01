@@ -6,6 +6,7 @@ This module defines the Loan model and its attributes.
 from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Numeric, Index
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import uuid
 from db.database import Base
 
 class Loan(Base):
@@ -15,6 +16,7 @@ class Loan(Base):
     __tablename__ = "fin_loans"
     
     id = Column(Integer, primary_key=True, index=True)
+    uuid = Column(String(36), unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
     loan_custom_id = Column(String(20), unique=True, index=True, nullable=True)
     client_id = Column(Integer, ForeignKey("core_clients.id", ondelete="RESTRICT"), nullable=False, index=True)
     

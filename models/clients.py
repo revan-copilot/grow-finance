@@ -98,6 +98,7 @@ class LoanApplication(Base):
     __tablename__ = "fin_loan_applications"
     
     id = Column(Integer, primary_key=True, index=True)
+    uuid = Column(String(36), unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
     loan_custom_id = Column(String(20), unique=True, index=True, nullable=True)
     client_id = Column(Integer, ForeignKey("core_clients.id", ondelete="RESTRICT"), nullable=False)
     
